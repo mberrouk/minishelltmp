@@ -13,6 +13,8 @@ typedef struct s_cmd
 	struct s_cmd	*next;
 }	t_cmd;
 
-char *pars_expan(t_lexer *data, char **env);
+char	*pars_expan(t_lexer *data, char **env);
 
 #endif
+
+

@@ -6,7 +6,7 @@
 /*   By: mberrouk <mberrouk@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/28 17:24:25 by mberrouk          #+#    #+#             */
-/*   Updated: 2023/07/31 06:56:54 by mberrouk         ###   ########.fr       */
+/*   Updated: 2023/08/02 00:42:00 by mberrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,15 +75,10 @@ char	*ft_strdup(char *s1);
 char	*ft_strchr(char *s, int c);
 
 /**
- * expander.c
- */
-char	*expand_arg(char *arg, char *env[]);
-
-/**
  * utils_double_ptr.c
  */
-char    **join_double(char **fir, char **last);
-int     double_len(char **ptr);
+char	**join_double(char **fir, char **last);
+int		double_len(char **ptr);
 
 /**
  * expansion_utils.c
@@ -92,9 +87,7 @@ int		sp_stay(char ch);
 int		check_sp_char(char c);
 int		sp_remove(char ch);
 int		sp_at_end(char ch);
-char    *get_var(char *var, char **env);
 int		handl_spchar_cases(char *arg, char **value);
-int		_strncmp(char *s1, char *s2, int n);
 
 /**
  * expansion_analsis.c
@@ -116,5 +109,16 @@ char	*expan_in_dquots(char *arg, char **env);
  */
 int		len_to_spchar(char *arg);
 int		skip_char(char *str, char c);
+int		len_at_char(char *str, char c);
+char	*get_var(char *var, char **env);
+
+/**
+ *  expansion_utils2.c
+ */
+int		skip_dollar(char **value, char *arg);
+int		check_after_skip(char **value, char *arg, char sep, int *i);
+int		check_sep(char arg, char sep);
+char	*quots_expan(char **env, char *arg, char sep, int *i);
+int		_strncmp(char *s1, char *s2, int n);
 
 #endif

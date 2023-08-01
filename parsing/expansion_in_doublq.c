@@ -48,7 +48,7 @@ int	handl_cases(char **value, char *arg, int ndol)
 		len = len_to_spchar(arg);
         *value = ft_strjoin(*value, ft_substr(arg, i, len));
 		i += len;
-		printf("°°°°° %s\n", *value);
+		//printf("°°°°° %s\n", *value);
 	}
 	return (i);
 }
