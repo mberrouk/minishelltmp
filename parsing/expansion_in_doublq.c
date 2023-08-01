@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "../include/shell.h"
-
+int skip_dollar(char **value, char *arg);
 int	not_expand(char **value, char *arg)
 {
 	int len;
@@ -64,7 +64,7 @@ char *expan_in_dquots(char *arg, char **env)
     {
         while (arg[i] != '$' && arg[i])
 			value = ft_realloc(value, arg[i++]);
-        ndol = skip_char(&arg[i], '$');
+        ndol = skip_dollar(&value, &arg[i]);
 		i += ndol;
         if (ndol && ndol % 2 == 0)
 		{

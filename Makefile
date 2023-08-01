@@ -6,7 +6,7 @@
 #    By: mberrouk <mberrouk@student.1337.ma>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/28 17:24:19 by mberrouk          #+#    #+#              #
-#    Updated: 2023/07/31 07:23:40 by mberrouk         ###   ########.fr        #
+#    Updated: 2023/07/31 21:00:10 by mberrouk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME = minishell
 
 CC			=	cc
 
-CFALGS		=	-Wall -Wextra -Werror -fsanitize=address -g3
+CFALGS		=	-Wall -Wextra -Werror -g #-fsanitize=address -g3
 
 IDFLAG		=	-I/Users/mberrouk/homebrew/opt/readline/include
 
@@ -26,7 +26,7 @@ SRCS =  utils/ft_split.c utils/linked_list_utils.c utils/utils_double_ptr.c util
 
 OBJ = ${SRCS:%.c=%.o}
 
-CC = cc #-Wall -Wextra -Werror  #-lncurses -fsanitize=address -g3 -L -lreadline -L /Users/mberrouk/homebrew/opt/readline/include/readline -I ~/homebrew/opt/readline/include
+CC = cc -fsanitize=address -g3 #-Wall -Wextra -Werror  #-lncurses  -L -lreadline -L /Users/mberrouk/homebrew/opt/readline/include/readline -I ~/homebrew/opt/readline/include
 CFLAGS = -Wall -Wextra -Werror -lncurses -lreadline
 
 all : ${NAME}
@@ -34,6 +34,7 @@ all : ${NAME}
 ${NAME} : ${OBJ}
 	$(CC) $(CFALGS) $(IDFLAG) $(LDFLAG) -o $@ $^
 	make clean
+	clear
 	./minishell
 
 %.o : %.c

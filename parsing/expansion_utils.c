@@ -82,7 +82,8 @@ int handl_spchar_cases(char *arg, char **value)
 	{
 		len = len_to_spchar(arg);
 		*value = ft_strjoin(*value, ft_substr(arg, 0, len));
-    }
+	
+	}
 	return (len);
 }
 
