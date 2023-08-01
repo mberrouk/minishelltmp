@@ -6,7 +6,7 @@
 /*   By: mberrouk <mberrouk@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 03:31:45 by mberrouk          #+#    #+#             */
-/*   Updated: 2023/07/31 05:23:51 by mberrouk         ###   ########.fr       */
+/*   Updated: 2023/08/01 17:20:36 by mberrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,10 +79,10 @@ t_lexer	*hold_args(t_lexer *ptr, t_cmd *tmp, char **env)
 t_lexer	*parse_lexer_data(t_lexer *ptr, t_cmd *cmd, char **env)
 {
 	t_cmd	*tmp;
-	t_lexer	*tmplex;
+	//t_lexer	*tmplex;
 	SymTok	token;
 
-	tmplex = ptr;
+	//tmplex = ptr;
 	tmp = cmd;
 	token = ptr->sym;
 	if (token == SIMPLE_CMD)

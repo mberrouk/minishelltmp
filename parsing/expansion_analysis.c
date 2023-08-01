@@ -6,7 +6,7 @@
 /*   By: mberrouk <mberrouk@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 05:54:30 by mberrouk          #+#    #+#             */
-/*   Updated: 2023/07/31 20:56:02 by mberrouk         ###   ########.fr       */
+/*   Updated: 2023/08/01 18:06:23 by mberrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ int	_strncmp(char *s1, char *s2, int n);
 int	check_sp_char(char c);
 int    sp_at_end(char ch);
 int    sp_remove(char ch);
+int len_at_char(char * str, char c);
 
 int skip_dollar(char **value, char *arg)
 {
@@ -29,7 +30,7 @@ int skip_dollar(char **value, char *arg)
 	{
 		if (i && !((i + 1) % 2))
             *value = ft_strjoin(*value, "$$");				/** use ft_strdup for $$ **/
-		else if (!arg[i + 1])
+		else if (!arg[i + 1] || sp_stay(arg[i + 1]))
 			*value =  ft_realloc(*value, '$');
 		i++;
     }	
@@ -92,6 +93,13 @@ char *continue_pars(char **env, char *arg, int *index, char sep)
 		*index += i;
 		return (value);
 	}
+	if (arg[i] && sp_stay(arg[i]))
+	{
+		value = ft_strjoin(value, ft_substr(&arg[i], 0, len_at_char(&arg[i], '$') + 1));
+		*index += len_at_char(&arg[i], '$') + i;
+		printf("---->> %s %d\n", value, *index);
+		return (value);
+	}
 	printf("arg --- > %s\n", arg);
 	while (arg[i])
     {
@@ -99,8 +107,11 @@ char *continue_pars(char **env, char *arg, int *index, char sep)
         if ((arg[i] == sep || !arg[i] || (sep == '$' && (arg[i] == '\'' || arg[i] == '\"'))))
         {
         	if (sep == '\"')
+			{
+				printf("im her\n");
         		value = ft_strjoin(value, expan_in_dquots(ft_substr(arg, 0, i + 1), env));
-        	else if (sep == '\'')
+			}
+			else if (sep == '\'')
             	value = ft_strjoin(value, ft_substr(arg, 0, i + 1));
         	else if (sep == '$' && ndolr % 2 != 0)
             {
@@ -124,7 +135,7 @@ char *continue_pars(char **env, char *arg, int *index, char sep)
 char *pars_arg_expan(char *arg, char **env)
 {
     int i;
-    int s;
+    //int s;
     char sep;
     char *value;
     
@@ -135,7 +146,7 @@ char *pars_arg_expan(char *arg, char **env)
         if (arg[i] == '\"' || arg[i] == '$' || arg[i] == '\'')
         {
             sep = arg[i];
-            s = i;
+            //s = i;
 			value = ft_strjoin(value, continue_pars(env, &arg[i], &i, sep));
         	printf("??? %s\n", value);
 		}

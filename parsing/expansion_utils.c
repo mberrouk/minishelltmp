@@ -6,7 +6,7 @@
 /*   By: mberrouk <mberrouk@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 05:54:38 by mberrouk          #+#    #+#             */
-/*   Updated: 2023/07/31 07:45:45 by mberrouk         ###   ########.fr       */
+/*   Updated: 2023/08/01 18:03:10 by mberrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int    sp_stay(char ch)
 {
     char    *spchar;
 
-    spchar = " \t\n\f\v\r\b\\`~%^&$()-=+[]{};:/.>,<";
+    spchar = " \t\n\f\v\r\b\\`~%^&()-=+[]{};:/.>,<#";
     if (ft_strchr(spchar, ch))
         return (1);
     return (0);
@@ -36,7 +36,7 @@ int    sp_remove(char ch)
 {
     char    *spchar;
 
-    spchar = " \t\n\f\v\r\b\\`!@#*-=+[]{};:/?.>,<0123456789";
+    spchar = "@?0123456789";
     if (ft_strchr(spchar, ch))
         return (1);
     return (0);

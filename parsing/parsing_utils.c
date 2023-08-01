@@ -6,7 +6,7 @@
 /*   By: mberrouk <mberrouk@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 05:56:26 by mberrouk          #+#    #+#             */
-/*   Updated: 2023/07/31 06:57:57 by mberrouk         ###   ########.fr       */
+/*   Updated: 2023/08/01 17:18:44 by mberrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,4 +30,14 @@ int	skip_char(char *str, char c)
 	while (str[i] == c)
 		i++;
 	return (i);
+}
+
+int len_at_char(char * str, char c)
+{
+    int i;
+
+    i = 0;
+    while(str[i] && str[i] != c)
+        i++;
+    return (i);
 }
