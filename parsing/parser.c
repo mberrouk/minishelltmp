@@ -6,7 +6,7 @@
 /*   By: mberrouk <mberrouk@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 03:31:45 by mberrouk          #+#    #+#             */
-/*   Updated: 2023/08/01 17:20:36 by mberrouk         ###   ########.fr       */
+/*   Updated: 2023/08/03 10:58:49 by mberrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,38 @@
 #include "../include/shell.h"
 char	*expan_arg(char *arg, char *env[]);
 char *pars_arg_expan(char *arg, char **env);
+
+t_file *new_file(SymTok	type, char *name)
+{
+	t_file	*new;
+
+	new = (t_file *)malloc(sizeof(t_file));
+	if (!new)
+		return (NULL);
+	new->fd = -1;
+	new->next = NULL;
+	new->name = name;
+	new->type = type;
+	return (new);
+}
+
+void	add_file(t_file **file_area, t_file *file)
+{
+	t_file	*ptr;
+
+	//if (!file_area)
+	//	return ;
+	ptr = *file_area;
+	if (!ptr)
+	{
+		*file_area = file;
+		return ;
+	}
+	while (ptr->next)
+		ptr = ptr->next;
+	ptr->next = file;
+}
+
 char	*handl_quots(char *arg)
 {
 	int		i;
@@ -55,48 +87,48 @@ char	*handl_quots(char *arg)
 
 t_lexer	*hold_args(t_lexer *ptr, t_cmd *tmp, char **env)
 {
-	if (ft_strchr(ptr->arg, '$'))
+
+	if (ptr->sym != HERE_DOC && ft_strchr(ptr->arg, '$'))
 		ptr->arg = pars_arg_expan(ptr->arg, env);
 	if (check_quots(ptr->arg))
 		ptr->arg = handl_quots(ptr->arg);
-	if (tmp->type != SIMPLE_CMD && (!(ptr->arg) || !*(ptr->arg)))
+	if (ptr->sym != SIMPLE_CMD && (!(ptr->arg) || !*(ptr->arg)))
 	{
-		printf("ambiguous redirect\n");
+		/** dont check it her !?  **/
+		//printf("ambiguous redirect\n");
 		/** !free data && cmd **/
 		return (0x00);
 	}
-	if (tmp->type == INPUT_RE)
-		tmp->input = join_double(tmp->input, ft_split(ptr->arg, '\0'));
-	else if (tmp->type == OUTPUT_RE)
-		tmp->output = join_double(tmp->output, ft_split(ptr->arg, '\0'));
-	else if (tmp->type == APPEND_RE)
-		tmp->outapp = join_double(tmp->outapp, ft_split(ptr->arg, '\0'));
-	else
+	if (ptr->sym != SIMPLE_CMD)
+	{
+		add_file(&(tmp->file), new_file(ptr->sym, ptr->arg));
+	}
+	else{
+
 		tmp->cmd = join_double(tmp->cmd, ft_split(ptr->arg, '\0'));
+	}
 	return (ptr->next);
 }
 
 t_lexer	*parse_lexer_data(t_lexer *ptr, t_cmd *cmd, char **env)
 {
 	t_cmd	*tmp;
-	//t_lexer	*tmplex;
 	SymTok	token;
 
-	//tmplex = ptr;
 	tmp = cmd;
 	token = ptr->sym;
 	if (token == SIMPLE_CMD)
 		return (hold_args(ptr, tmp, env));
 	ptr = ptr->next;
-	if (!ptr || ptr->sym != SIMPLE_CMD)
+	if (!ptr)
 	{
 		/** !write on stderr           !handle <<<  token(newline) **/
 		printf("syntax error near unexpected token `%s'\n", ptr ? ptr->arg : "newline");
 		/** ! free data && cmd **/
-		return (NULL);
+		return (ptr);
 	}
 	//ptr->sym = token;
-    tmp->type = token;
+    ptr->sym = token;
     return (hold_args(ptr, tmp, env));
 }
 
@@ -126,7 +158,7 @@ void	init_parse(t_cmd **cmd, char *line, char *env[])
 			//	return ;
 			//}
 		}
-		if ((ptr == data) || (ptr && ptr->next && ptr->next->sym != SIMPLE_CMD))
+		if (ptr && ptr->sym == PIPE && (!ptr->next || ptr->next->sym == PIPE))
 		{
 			/** !write on stderr **/
 			printf("syntax error near unexpected token `%s'\n", ptr->arg);

@@ -6,7 +6,7 @@
 /*   By: mberrouk <mberrouk@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/28 17:24:16 by mberrouk          #+#    #+#             */
-/*   Updated: 2023/07/31 07:09:33 by mberrouk         ###   ########.fr       */
+/*   Updated: 2023/08/03 10:57:14 by mberrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,14 +112,14 @@ void	ft_env(t_env *list_env, char **av)
 int	main(int ac, char *av[], char *env[])
 {
 	(void)av;
-	t_env	*envlist;
 	t_cmd	*cmds;
 	char	*line;
 	if (ac != 1)
 		return (1);
 	line = NULL;
 	cmds = NULL;
-	fetch_env(&envlist, env);
+	fetch_env(&t_info.g_env, env);
+	//printf_env(t_info.g_env);
 	// ft_env(envlist, av);
 	while (1)
 	{
@@ -135,9 +135,9 @@ int	main(int ac, char *av[], char *env[])
 			init_parse(&cmds, line, env);
 			exec_cmds(cmds, 0, env);
 		}
-		else {
-			continue;
-		}
+		//else {
+		//	continue;
+		//}
 	}
 
 	/**

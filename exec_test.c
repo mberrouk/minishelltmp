@@ -6,7 +6,7 @@
 /*   By: mberrouk <mberrouk@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/24 19:42:34 by mberrouk          #+#    #+#             */
-/*   Updated: 2023/07/31 07:05:12 by mberrouk         ###   ########.fr       */
+/*   Updated: 2023/08/03 11:21:18 by mberrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 
 void	not_found(char *parm)
 {
-	write(STDERR_FILENO, "pipex: ", 8);
+	write(STDERR_FILENO, "minishell: ", 8);
 	if (parm && *parm)
 		write(STDERR_FILENO, parm, ft_strlen(parm));
 	write(STDERR_FILENO, ": command not found\n", 21);
@@ -96,11 +96,10 @@ void	execute_command(int ifd, int ofd, t_cmd *data, char **cmds, char **path, ch
 	pid_t	pid;
 	char	*cmd;
 	(void)data;
-
+	//(void)ff;
 	pid = fork();
 	if (pid == 0)
 	{
-		
 		if (ifd > 0)
 			if (dup2(ifd, STDIN_FILENO) == -1 )
 				puterr("1 :Error dup2\n");
@@ -118,6 +117,7 @@ void	execute_command(int ifd, int ofd, t_cmd *data, char **cmds, char **path, ch
 			close(ofd);
 		if (ifd > 0)
 			close(ifd);
+
 		if (cmds && cmds[0] && cmds[0][0] == '/')
 			cmd = cmds[0];
 		else
@@ -139,80 +139,80 @@ void	execute_command(int ifd, int ofd, t_cmd *data, char **cmds, char **path, ch
 void	cmds(t_cmd *data, int fdi, char **path, char **env)
 {
 	int	pip_fds[2];
-	int	i;
 	int fdo = 1;
 	// int status;
-	int	fdapp;
+	//SymTok prev;
+	int	fdapp = -1;
 	
 	pip_fds[1] = 1; 
+	pip_fds[0] = 0; 
 	while (data)
 	{
+		fdo = 1;
 		/**
 		if (data->next)
 			pipe(pip_fds);
 		**/
-		if (!data->cmd)
-			return ;
-		if (data->input)
-		{
-			i = 0;
-			while (data->input[i])
-			{
-				fdi = open(data->input[i], O_RDONLY);
-				if (fdi == -1)
-					perror(data->input[i]);
-				if (data->input[i + 1])
-					close(fdi);
-				i++;
-			}
-		}
-		if (data->output)
-		{
-			printf("\n out on : ==> \n");
-			i = 0;
-			while (data->output[i])
-			{
-				fdo = open(data->output[i], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-				if (fdo == -1)
-					perror(data->output[i]);
-				if (data->output[i + 1])
-					close(fdo);
-				i++;
-			}
-		}
-		if (data->outapp)
-		{
-			i = 0;
-			while (data->outapp[i])
-			{
-				fdapp = open(data->outapp[i], O_APPEND | O_CREAT | O_RDWR, 0644);
-				if (fdapp == -1)
-					perror(data->outapp[i]);
-				if (data->outapp[i + 1])
-					close(fdapp);
-				i++;
-			}
 
+		if (!data->cmd && !data->file)
+			return ;
+		while (data->file)
+		{
+			if (data->file->type == INPUT_RE)
+			{
+				if (fdi != 0)
+					close(fdi);
+				fdi = open(data->file->name, O_RDONLY);
+				if (fdi == -1)
+					perror(data->file->name);
+			}
+			else if (data->file->type == OUTPUT_RE)
+			{
+				data->type = data->file->type;
+				if (fdo != 1)
+					close(fdo);
+				fdo = open(data->file->name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+				if (fdo == -1)
+					perror(data->file->name);
+				printf("%d %s\n", fdo, data->file->name);
+			}
+			else if (data->file->type == APPEND_RE)
+			{
+				data->type = data->file->type;
+				if (fdapp != -1)
+					close(fdapp);
+				fdapp = open(data->file->name, O_APPEND | O_CREAT | O_RDWR);
+				if (fdapp == -1)
+					perror(data->file->name);
+				
+			}
+			data->file = data->file->next;
 		}
+
+		//printf("----------> %s\n", *data->cmd);
 		if (data->next)
 		{	
+			if (pip_fds[1] != 1)
+				close(pip_fds[1]);
 			if (pipe(pip_fds) == -1)
 				puterr(NULL);
 		}
 		else 		
 		{
 			if (data->type == APPEND_RE)
+			{
+				close(fdo);
 				fdo = fdapp;
-		/**	if (pip_fds[1] != 1)
-				close(pip_fds[1]);**/
+			}
+			if (pip_fds[1] != 1)
+				close(pip_fds[1]);
 			pip_fds[1] = fdo;
 		}	
 		if (data->type == APPEND_RE)
-			fdo = fdapp;
-		if (fdo != 1)
 		{
-			/** handl ls > 1 | cat **/
-		//	close(fd[1]);
+			fdo = fdapp;
+			if (pip_fds[1] != 1)
+				close(pip_fds[1]);
 			pip_fds[1] = fdo;
 		}
 		execute_command(fdi, pip_fds[1], data, data->cmd, path, env);
@@ -222,6 +222,62 @@ void	cmds(t_cmd *data, int fdi, char **path, char **env)
 			close(pip_fds[1]);
 		fdi = pip_fds[0];
 		data = data->next;
+		
+/**
+		if (data->next)
+		{	
+			if (pipe(pip_fds) == -1)
+				puterr(NULL);
+
+		}
+		else 		
+		{
+			//close(pip_fds[0]);
+			if (pip_fds[1] != 1)
+			close(pip_fds[1]);
+			if (data->type == APPEND_RE)
+			{
+				close(fdo);
+				fdo = fdapp;
+			}
+			if (pip_fds[1] != 1)
+				close(pip_fds[1]);
+			pip_fds[1] = fdo;
+		}	
+		if (data->type == APPEND_RE || data->type == OUTPUT_RE)
+		{
+			//close(pip_fds[1]);
+			if (data->type == APPEND_RE )
+			{
+				close(fdo);
+				fdo = fdapp;
+			}
+			if (pip_fds[1] != 1)
+				close(pip_fds[1]);
+			pip_fds[1] = fdo;
+		printf("--)-)---- > %d %d %d %d %d\n", pip_fds[0], pip_fds[1], fdapp, fdi, fdo);
+		}
+
+		execute_command(fdi, pip_fds[1], data, data->cmd, path, env, pip_fds[0], pip_fds[1]);
+		printf("im here-------------------> \n");
+		if (fdi != 0)
+			close(fdi);
+		if (pip_fds[1] != 1)
+			close(pip_fds[1]);
+		//if (pip_fds[0])
+		//	close(pip_fds[0]);
+		if ((data->type == APPEND_RE ||data->type == OUTPUT_RE))
+		{	
+			if (pip_fds[0])
+			close(pip_fds[0]);
+			fdi = 0;
+		}
+		else
+			fdi = pip_fds[0];
+		printf("fdi :::= %d\n", fdi);
+		printf("im here-------------------> %d\n", fdi);
+*/
+		//prev = data->type
 	}
 
 }
@@ -248,8 +304,10 @@ void	exec_cmds(t_cmd *data, int status, char **env)
 		printf("\n Error : path\n");
 	}
 	cmds(data, 0, path, env);
-	while (wait(&status) > 0)
-		;
+	waitpid(-1,&status,0);
+	//wait3(&status,0,NULL);
+	//while (wait(&status) > 0)
+	//	;
 	status = WEXITSTATUS(status);
 /**	if (data->cmd)
 		free_cmds(data->cmd);

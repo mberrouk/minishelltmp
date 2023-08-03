@@ -6,7 +6,7 @@
 /*   By: mberrouk <mberrouk@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/28 17:24:25 by mberrouk          #+#    #+#             */
-/*   Updated: 2023/08/02 00:42:00 by mberrouk         ###   ########.fr       */
+/*   Updated: 2023/08/03 03:28:24 by mberrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 
 # include "../include/lexer.h"
 # include "../include/parser.h"
+# include "minishell.h"
 
 /**
  * utils_strings.c
@@ -120,5 +121,7 @@ int		check_after_skip(char **value, char *arg, char sep, int *i);
 int		check_sep(char arg, char sep);
 char	*quots_expan(char **env, char *arg, char sep, int *i);
 int		_strncmp(char *s1, char *s2, int n);
+
+char	*ft_itoa(int n);
 
 #endif

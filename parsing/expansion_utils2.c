@@ -6,7 +6,7 @@
 /*   By: mberrouk <mberrouk@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 00:21:04 by mberrouk          #+#    #+#             */
-/*   Updated: 2023/08/02 00:42:40 by mberrouk         ###   ########.fr       */
+/*   Updated: 2023/08/03 03:29:58 by mberrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ int	skip_dollar(char **value, char *arg)
 			*value =  ft_realloc(*value, '$');
 		i++;
 	}
+
 	return (i);
 }
 

@@ -6,7 +6,7 @@
 /*   By: mberrouk <mberrouk@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/28 17:22:38 by mberrouk          #+#    #+#             */
-/*   Updated: 2023/07/30 15:19:58 by mberrouk         ###   ########.fr       */
+/*   Updated: 2023/08/03 10:58:28 by mberrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,18 +104,5 @@ void	lexical_analysis(char *line, t_lexer **lst)
 		else
 			i += hold_arg(&line[i], ptr);
 	}
-/**	t_lexer *new = *lst;
-	for (; new; new = new->next)
-		printf("%s\n", new->arg);**/
 }
-/**
-int main(int ac, char *av[])
-{
-	t_lexer *new;
-	
-	new = lexer_lstnew(NULL);
-	lexical_analysis(av[1], &new);
-	for (;new; new = new->next)
-		printf("%s\n", new->arg);
-}
-**/
+

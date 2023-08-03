@@ -6,7 +6,7 @@
 /*   By: mberrouk <mberrouk@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 06:58:18 by mberrouk          #+#    #+#             */
-/*   Updated: 2023/08/01 17:59:27 by mberrouk         ###   ########.fr       */
+/*   Updated: 2023/08/03 04:35:36 by mberrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,18 +37,17 @@ int	handl_cases(char **value, char *arg, int ndol)
 	(void)ndol;
 
 	i = 0;
+	if (arg[i] == '?')
+		*value = ft_strjoin(*value, ft_itoa(t_info.exit_status)); 
     if (sp_remove(arg[i]) && (arg[i] != '\'' && arg[i] != '\"') && arg[i] != '$')
         i++;
     else
     {
 		if ((arg[i] == '\"' || arg[i] == '\''))
-		{
 			*value = ft_realloc(*value, arg[i - 1]); 
-		}
 		len = len_to_spchar(arg);
         *value = ft_strjoin(*value, ft_substr(arg, i, len));
 		i += len;
-		//printf("°°°°° %s\n", *value);
 	}
 	return (i);
 }

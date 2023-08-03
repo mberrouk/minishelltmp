@@ -6,7 +6,7 @@
 /*   By: mberrouk <mberrouk@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 05:54:38 by mberrouk          #+#    #+#             */
-/*   Updated: 2023/08/02 00:49:40 by mberrouk         ###   ########.fr       */
+/*   Updated: 2023/08/03 03:30:55 by mberrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,8 @@ int	handl_spchar_cases(char *arg, char **value)
 	int	len;
 
 	len = 0;
+	if (arg[len] == '?')
+		*value = ft_strjoin(*value, ft_itoa(t_info.exit_status));
 	if (sp_remove(arg[len]))
 		len++;
 	else
