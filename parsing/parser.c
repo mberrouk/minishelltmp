@@ -6,7 +6,7 @@
 /*   By: mberrouk <mberrouk@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 03:31:45 by mberrouk          #+#    #+#             */
-/*   Updated: 2023/08/03 10:58:49 by mberrouk         ###   ########.fr       */
+/*   Updated: 2023/08/03 11:55:33 by mberrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,7 @@ t_lexer	*parse_lexer_data(t_lexer *ptr, t_cmd *cmd, char **env)
 	{
 		/** !write on stderr           !handle <<<  token(newline) **/
 		printf("syntax error near unexpected token `%s'\n", ptr ? ptr->arg : "newline");
+		t_info.exit_status = 258;
 		/** ! free data && cmd **/
 		return (ptr);
 	}
@@ -162,6 +163,7 @@ void	init_parse(t_cmd **cmd, char *line, char *env[])
 		{
 			/** !write on stderr **/
 			printf("syntax error near unexpected token `%s'\n", ptr->arg);
+			t_info.exit_status = 258;
 			/** ! free data && cmd **/
 			return ;
 		}
