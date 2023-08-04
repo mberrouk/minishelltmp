@@ -6,15 +6,12 @@
 /*   By: mberrouk <mberrouk@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/31 03:31:45 by mberrouk          #+#    #+#             */
-/*   Updated: 2023/08/03 11:55:33 by mberrouk         ###   ########.fr       */
+/*   Updated: 2023/08/04 23:07:19 by mberrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/lexer.h"
-#include "../include/parser.h"
+
 #include "../include/shell.h"
-char	*expan_arg(char *arg, char *env[]);
-char *pars_arg_expan(char *arg, char **env);
 
 t_file *new_file(SymTok	type, char *name)
 {
@@ -34,8 +31,6 @@ void	add_file(t_file **file_area, t_file *file)
 {
 	t_file	*ptr;
 
-	//if (!file_area)
-	//	return ;
 	ptr = *file_area;
 	if (!ptr)
 	{
@@ -60,14 +55,12 @@ char	*handl_quots(char *arg)
 	narg = ft_strdup("");
 	while (arg[i])
 	{
-		if (!quots && (arg[i] == '\'' || arg[i] == '\"'))
-		{	
-			quots = arg[i];
-			n_qts++;
-		}
-		else if (quots == arg[i])
+		if ((!quots || quots == arg[i]) && (arg[i] == '\'' || arg[i] == '\"'))
 		{
-			quots = '\0';
+			if (!quots)
+				quots = arg[i];
+			else
+				quots = '\0';
 			n_qts++;
 		}
 		else if (arg[i] && arg[i] != quots)
@@ -76,41 +69,36 @@ char	*handl_quots(char *arg)
 	}
 	if (n_qts && n_qts % 2)
 	{
-		/** ! write on stderr **/
-		printf("syntax error near unexpected token `%c'\n", quots);
-		//free(narg);
+		_print(2, "syntax error near unexpected token `%c'\n", quots);
+		t_info.exit_status = 258;
+		free(narg);
 		return (0x00);
 	}
-	//free(arg);
 	return (narg);
 }
 
-t_lexer	*hold_args(t_lexer *ptr, t_cmd *tmp, char **env)
+t_lexer	*hold_args(t_cmd **head, t_lexer *ptr, t_cmd *tmp, char **env)
 {
 
 	if (ptr->sym != HERE_DOC && ft_strchr(ptr->arg, '$'))
 		ptr->arg = pars_arg_expan(ptr->arg, env);
 	if (check_quots(ptr->arg))
 		ptr->arg = handl_quots(ptr->arg);
-	if (ptr->sym != SIMPLE_CMD && (!(ptr->arg) || !*(ptr->arg)))
+	if (!(ptr->arg))
 	{
 		/** dont check it her !?  **/
 		//printf("ambiguous redirect\n");
-		/** !free data && cmd **/
+		clean_parss(head);
 		return (0x00);
 	}
 	if (ptr->sym != SIMPLE_CMD)
-	{
 		add_file(&(tmp->file), new_file(ptr->sym, ptr->arg));
-	}
-	else{
-
-		tmp->cmd = join_double(tmp->cmd, ft_split(ptr->arg, '\0'));
-	}
+	else
+		tmp->cmd = join_double(tmp->cmd, ft_strdup(ptr->arg));
 	return (ptr->next);
 }
 
-t_lexer	*parse_lexer_data(t_lexer *ptr, t_cmd *cmd, char **env)
+t_lexer	*parse_lexer_data(t_cmd **head, t_lexer *ptr, t_cmd *cmd, char **env)
 {
 	t_cmd	*tmp;
 	SymTok	token;
@@ -118,20 +106,22 @@ t_lexer	*parse_lexer_data(t_lexer *ptr, t_cmd *cmd, char **env)
 	tmp = cmd;
 	token = ptr->sym;
 	if (token == SIMPLE_CMD)
-		return (hold_args(ptr, tmp, env));
+		return (hold_args(head, ptr, tmp, env));
 	ptr = ptr->next;
-	if (!ptr)
+	if (!ptr || ptr->sym != SIMPLE_CMD)
 	{
-		/** !write on stderr           !handle <<<  token(newline) **/
-		printf("syntax error near unexpected token `%s'\n", ptr ? ptr->arg : "newline");
+		if (!ptr)
+			_print(2, "syntax error near unexpected token `%s'\n", "newline");
+		else
+			_print(2, "syntax error near unexpected token `%s'\n", ptr->sym);
 		t_info.exit_status = 258;
-		/** ! free data && cmd **/
+		clean_parss(head);
 		return (ptr);
 	}
-	//ptr->sym = token;
     ptr->sym = token;
-    return (hold_args(ptr, tmp, env));
+    return (hold_args(head, ptr, tmp, env));
 }
+
 
 void	init_parse(t_cmd **cmd, char *line, char *env[])
 {
@@ -143,36 +133,31 @@ void	init_parse(t_cmd **cmd, char *line, char *env[])
 	if (!line || !line[skip_withespace(line, 0)])
 		return ;
 	lexical_analysis(line, &data);
-	/** if (!data)
-		return ; ! Check first **/
-	*cmd = parser_lstnew(NULL);
-	tmp = *cmd;
 	ptr = data;
+	tmp = NULL;
 	while (ptr)
 	{
-		while (ptr && ptr->sym != PIPE)
+		if ((ptr && ptr->sym == PIPE && ptr == data)
+			|| ((ptr && ptr->sym == PIPE)
+				&& (!ptr->next || ptr->next->sym == PIPE)))
 		{
-			ptr = parse_lexer_data(ptr, tmp, env);
-			//if (!tmp)
-			//{
-				/* Error exit */
-			//	return ;
-			//}
-		}
-		if (ptr && ptr->sym == PIPE && (!ptr->next || ptr->next->sym == PIPE))
-		{
-			/** !write on stderr **/
-			printf("syntax error near unexpected token `%s'\n", ptr->arg);
+			_print(2, "syntax error near unexpected token `%s'\n", ptr->arg);
 			t_info.exit_status = 258;
-			/** ! free data && cmd **/
-			return ;
+			clean_parss(cmd);
+			break ;
 		}
-		else if ((ptr && ptr->sym == PIPE && ptr->next))
+		else
 		{
 			parser_lstadd_back(cmd,  parser_lstnew(NULL));
-			tmp = tmp->next;
-			ptr = ptr->next;
+			if (tmp)
+				tmp = tmp->next;
+			else 
+				tmp = *cmd;
 		}
-
+		if (ptr->sym == PIPE)
+			ptr = ptr->next;
+		while (ptr && ptr->sym != PIPE)
+			ptr = parse_lexer_data(cmd, ptr, tmp, env);
 	}
+	clean_lexer(data);
 }

@@ -12,23 +12,18 @@
 
 #include "../include/shell.h"
 
-/**
- * handle_error - Handles memory deallocation and returns NULL
- * @s: The array of strings to be freed
- *
- * Return: NULL
- */
-char	**handle_error(char **s)
+char	**free_double(char **s)
 {
 	int	i;
 
 	i = 0;
-	while (s[i])
+	while (s && s[i])
 	{
 		free(s[i]);
 		i++;
 	}
-	free(s);
+	if (s)
+		free(s);
 	return (NULL);
 }
 

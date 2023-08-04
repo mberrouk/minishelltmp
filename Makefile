@@ -23,7 +23,7 @@ LDFLAG		=	-L/Users/mberrouk/homebrew/opt/readline/lib -lreadline
 SRCS =  utils/ft_split.c utils/linked_list_utils.c utils/utils_double_ptr.c utils/utils_err.c \
 		utils/utils_strings.c utils/utils_strings1.c parsing/lexer.c parsing/parser.c parsing/parsing_utils.c\
 		main.c exec_test.c parsing/expansion_analysis.c parsing/expansion_in_doublq.c parsing/expansion_utils.c \
-		parsing/expansion_utils2.c parsing/itoa.c
+		parsing/expansion_utils2.c parsing/itoa.c env_process.c ft_printf.c clean_utils.c
 
 OBJ = ${SRCS:%.c=%.o}
 

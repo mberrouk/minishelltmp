@@ -6,7 +6,7 @@
 /*   By: mberrouk <mberrouk@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/28 17:33:22 by mberrouk          #+#    #+#             */
-/*   Updated: 2023/07/28 17:33:55 by mberrouk         ###   ########.fr       */
+/*   Updated: 2023/08/04 22:44:27 by mberrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ static char	**count_dup(char **s, char *str, char c)
 				j++;
 			s[w] = (char *)malloc(sizeof(char) * j + 1);
 			if (!s[w])
-				return (handle_error(s));
+				return (free_double(s));
 			ft_strlcpy(s[w], &str[i], j + 1);
 			i += j;
 			w++;

@@ -12,7 +12,6 @@
 
 #include "../include/lexer.h"
 #include "../include/shell.h"
-#include <stdio.h>
 
 int	symbol_case(char *line, t_lexer *ptr)
 {

@@ -6,7 +6,7 @@
 /*   By: mberrouk <mberrouk@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/28 17:24:25 by mberrouk          #+#    #+#             */
-/*   Updated: 2023/08/03 03:28:24 by mberrouk         ###   ########.fr       */
+/*   Updated: 2023/08/04 22:44:27 by mberrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,15 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
+# include <stdarg.h>
+# include <errno.h>
+# include <readline/readline.h>
+# include <readline/history.h>
 
-# include "../include/lexer.h"
-# include "../include/parser.h"
+# include "lexer.h"
+# include "parser.h"
 # include "minishell.h"
+
 
 /**
  * utils_strings.c
@@ -64,7 +69,7 @@ char	**ft_split(char const *s, char c);
  * err_utils.c
  */
 void	*print_err(char *str);
-char	**handle_error(char **s);
+char	**free_double(char **s);
 
 /**
  * utils_strings1.c
@@ -78,7 +83,7 @@ char	*ft_strchr(char *s, int c);
 /**
  * utils_double_ptr.c
  */
-char	**join_double(char **fir, char **last);
+char    **join_double(char **fir, char *last);
 int		double_len(char **ptr);
 
 /**
@@ -122,6 +127,29 @@ int		check_sep(char arg, char sep);
 char	*quots_expan(char **env, char *arg, char sep, int *i);
 int		_strncmp(char *s1, char *s2, int n);
 
+/**
+ */
 char	*ft_itoa(int n);
+
+/**
+ * env_process.c
+ */
+t_env	*new_node(char *key, char *val, int idx);
+void	add_node(t_env **lst, t_env *new);
+void	fetch_env(t_env **envlist, char **env);
+void	printf_env(t_env *list_env);
+
+/**
+ * ft_printf.c
+ */
+void _print(int fd, char *str, ...);
+
+/**
+ * clean_utils.c
+ */
+
+void	clean_file(t_file *file);
+void	clean_parss(t_cmd **cmd);
+void	clean_lexer(t_lexer *data);
 
 #endif

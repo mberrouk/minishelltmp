@@ -6,7 +6,7 @@
 /*   By: mberrouk <mberrouk@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/28 17:33:09 by mberrouk          #+#    #+#             */
-/*   Updated: 2023/07/28 18:28:43 by mberrouk         ###   ########.fr       */
+/*   Updated: 2023/08/04 22:44:27 by mberrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,21 +25,23 @@ int	double_len(char **ptr)
 }
 
 
-char    **join_double(char **fir, char **last)
+char    **join_double(char **fir, char *last)
 {
     char **new;
     int len;
     int i;
-    int j;
     
-    len = double_len(fir) + double_len(last);
+    len = double_len(fir) + 1;
 	if (!len)
 		return (0x00);
     new = malloc(sizeof(char *) * (len + 1));
     if (!new)
-        return (0x00);
+	{
+		free_double(fir);
+		_print(2, "malloc failure\n");
+        exit(errno);
+	}
     i = 0;
-    j = 0;
     while (fir && fir[i])
     {
         new[i] = ft_strdup(fir[i]);
@@ -50,23 +52,12 @@ char    **join_double(char **fir, char **last)
 		free(fir[i]);
         i++;
     }
-	while (last && last[j])
-	{
-		new[i + j] = ft_strdup(last[j]);
-        if (!new[i + j])
-        {
-            return (0x00);
-        }
-		free(last[j]);
-		j++;
-	}
-	/**
+	new[i] = ft_strdup(last);
 	if (fir)
 		free(fir);
 	if (last)
 		free(last);
-	**/
-	new[i + j] = NULL;
+	new[i + 1] = NULL;
 	return (new);
 }
 
